@@ -12,11 +12,17 @@ from flask import Flask, render_template, request, redirect, url_for, flash, abo
 # Initialize Flask application
 app = Flask(__name__)
 # Secret key for session security and flash messaging
-app.secret_key = "student_task_manager_secret_key_change_in_production"
+app.secret_key = os.environ.get(
+    "SECRET_KEY", "student_task_manager_dev_key_change_in_production"
+)
 
-# Database path (stored in the same directory as this script)
+# Vercel's filesystem is read-only except for /tmp.
+# Use /tmp on Vercel; use the project folder for local development.
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, "tasks.db")
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/tasks.db"
+else:
+    DB_PATH = os.path.join(BASE_DIR, "tasks.db")
 
 # Predefined categories and priorities
 CATEGORIES = ["Assignment", "Practical", "Project", "Exam Preparation", "Personal"]
@@ -546,3 +552,4 @@ if __name__ == "__main__":
     print(" Press Ctrl+C in this terminal to stop the server.")
     print("=" * 60)
     app.run(host="0.0.0.0", port=port, debug=False)
+
