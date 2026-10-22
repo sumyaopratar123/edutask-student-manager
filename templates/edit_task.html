@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Task #{{ task.id }} • Student Task Management System{% endblock %}
+{% block page_heading %}Edit Task{% endblock %}
+
+{% block content %}
+<div class="form-page-container">
+    <div class="back-nav-bar">
+        <a href="{{ url_for('tasks') }}" class="back-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Tasks</span>
+        </a>
+    </div>
+
+    <div class="card form-card">
+        <div class="form-card-header">
+            <div class="form-icon-circle edit">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </div>
+            <div>
+                <h2 class="form-card-title">Edit Task Details</h2>
+                <p class="form-card-subtitle">Update deadlines, priority, notes, or mark task as completed.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('edit_task', task_id=task.id) }}" class="task-form" id="editTaskForm" novalidate>
+            <!-- Task Title -->
+            <div class="form-group">
+                <label for="taskTitle" class="form-label required">Task Title</label>
+                <input type="text"
+                       name="title"
+                       id="taskTitle"
+                       class="form-control"
+                       placeholder="Task title"
+                       value="{{ task.title }}"
+                       required
+                       maxlength="150">
+            </div>
+
+            <!-- Category & Priority Row -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="taskCategory" class="form-label required">Category</label>
+                    <select name="category" id="taskCategory" class="form-control" required>
+                        {% for cat in ALL_CATEGORIES %}
+                            <option value="{{ cat }}" {% if task.category == cat %}selected{% endif %}>
+                                {{ cat }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-col">
+                    <label for="taskPriority" class="form-label required">Priority Level</label>
+                    <select name="priority" id="taskPriority" class="form-control" required>
+                        {% for prio in ALL_PRIORITIES %}
+                            <option value="{{ prio }}" {% if task.priority == prio %}selected{% endif %}>
+                                {{ prio }} Priority
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Due Date & Status Row -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="taskDueDate" class="form-label required">Due Date</label>
+                    <input type="date"
+                           name="due_date"
+                           id="taskDueDate"
+                           class="form-control"
+                           value="{{ task.due_date }}"
+                           required>
+                    {% if task.is_overdue %}
+                        <span class="field-hint text-danger">⚠️ This task is currently overdue!</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-col">
+                    <label for="taskStatus" class="form-label required">Completion Status</label>
+                    <select name="status" id="taskStatus" class="form-control" required>
+                        <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Description / Notes -->
+            <div class="form-group">
+                <label for="taskDesc" class="form-label">Description / Notes <span class="text-muted">(Optional)</span></label>
+                <textarea name="description"
+                          id="taskDesc"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Faculty requirements, references, checklist items...">{{ task.description or '' }}</textarea>
+            </div>
+
+            <!-- Actions Row -->
+            <div class="form-actions-split">
+                <button type="button" class="btn btn-outline-danger open-delete-modal"
+                        data-task-id="{{ task.id }}"
+                        data-task-title="{{ task.title }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Delete Task</span>
+                </button>
+
+                <div class="form-actions-right">
+                    <a href="{{ url_for('tasks') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="updateTaskBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Update Task</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

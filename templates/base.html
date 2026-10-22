@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Task Management System{% endblock %}</title>
+    <!-- Custom Modern Dashboard Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('index') }}" class="brand-logo">
+                    <span class="logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </span>
+                    <div class="brand-text">
+                        <span class="brand-title">EduTask</span>
+                        <span class="brand-subtitle">Student Portal</span>
+                    </div>
+                </a>
+                <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-action">
+                <a href="{{ url_for('add_task') }}" class="btn btn-primary btn-block">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Add New Task</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">NAVIGATION</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('tasks', status='all') }}" class="nav-link {% if request.endpoint == 'tasks' and request.args.get('status', 'all') == 'all' %}active{% endif %}">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-text">All Tasks</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('tasks', status='pending') }}" class="nav-link {% if request.endpoint == 'tasks' and request.args.get('status') == 'pending' %}active{% endif %}">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Pending Tasks</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('tasks', status='completed') }}" class="nav-link {% if request.endpoint == 'tasks' and request.args.get('status') == 'completed' %}active{% endif %}">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Completed Tasks</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('tasks', status='overdue') }}" class="nav-link {% if request.endpoint == 'tasks' and request.args.get('status') == 'overdue' %}active{% endif %}">
+                            <span class="nav-icon danger-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </span>
+                            <span class="nav-text">Overdue Tasks</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-title">CATEGORIES</div>
+                <ul class="nav-list categories-list">
+                    <li>
+                        <a href="{{ url_for('tasks', category='Assignment') }}" class="nav-link sub-link">
+                            <span class="cat-dot cat-assignment"></span>
+                            <span class="nav-text">Assignments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('tasks', category='Practical') }}" class="nav-link sub-link">
+                            <span class="cat-dot cat-practical"></span>
+                            <span class="nav-text">Practicals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('tasks', category='Project') }}" class="nav-link sub-link">
+                            <span class="cat-dot cat-project"></span>
+                            <span class="nav-text">Projects</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('tasks', category='Exam Preparation') }}" class="nav-link sub-link">
+                            <span class="cat-dot cat-exam"></span>
+                            <span class="nav-text">Exam Prep</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('tasks', category='Personal') }}" class="nav-link sub-link">
+                            <span class="cat-dot cat-personal"></span>
+                            <span class="nav-text">Personal</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Student Profile Badge in Sidebar -->
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span>ST</span>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Student Portal</span>
+                    <span class="user-role">Semester VI • CS/IT</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Workspace Area -->
+        <div class="main-wrapper">
+            <!-- Top Navbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Navigation">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="page-header-info">
+                        <h1 class="page-main-heading">{% block page_heading %}Dashboard{% endblock %}</h1>
+                        <span class="current-date-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Today: {{ today_str }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <a href="{{ url_for('add_task') }}" class="btn btn-primary btn-sm topbar-action-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>New Task</span>
+                    </a>
+                    <div class="student-profile-badge">
+                        <div class="student-avatar-circle">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Flash Notifications -->
+            <div class="content-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash-alert flash-{{ category }}" role="alert">
+                                    <div class="flash-content">
+                                        {% if category == 'success' %}
+                                            <svg class="flash-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                        {% elif category == 'danger' %}
+                                            <svg class="flash-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                            </svg>
+                                        {% else %}
+                                            <svg class="flash-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                            </svg>
+                                        {% endif %}
+                                        <span>{{ message }}</span>
+                                    </div>
+                                    <button type="button" class="flash-close-btn" onclick="this.parentElement.remove()" aria-label="Dismiss message">&times;</button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Main Page Content Block -->
+                {% block content %}
+                    {% if error_title %}
+                        <div class="empty-state-card text-center" style="padding: 4rem 1.5rem;">
+                            <div class="empty-icon-circle danger">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <h3>{{ error_title }}</h3>
+                            <p class="text-muted">{{ error_message }}</p>
+                            <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top: 1rem;">Back to Dashboard</a>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+            </div>
+
+            <!-- Page Footer -->
+            <footer class="app-footer">
+                <div class="footer-content">
+                    <p>&copy; Student Task Management System &bull; College B.Tech Mini Project &bull; Built with Flask &amp; SQLite</p>
+                    <div class="footer-links">
+                        <span class="status-indicator-dot online"></span> Database Connected
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Reusable Delete Confirmation Modal -->
+    <div class="modal-backdrop" id="deleteModal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-alert-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="modal-title">Delete Task?</h3>
+                    <p class="modal-subtitle">This action cannot be undone.</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to permanently delete <strong id="deleteTaskTitle">this task</strong> from your schedule?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <form id="deleteTaskForm" method="POST" action="">
+                    <button type="submit" class="btn btn-danger">Yes, Delete Task</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript Logic -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

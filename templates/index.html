@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard • Student Task Management System{% endblock %}
+{% block page_heading %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Header Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h2>Welcome to your Academic Workspace! 🎓</h2>
+            <p>Track your assignments, lab practicals, term projects, and exam revisions all in one place.</p>
+        </div>
+        <div class="welcome-cta">
+            <a href="{{ url_for('add_task') }}" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add New Task</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Summary Stat Cards -->
+    <div class="stats-grid">
+        <!-- Total Tasks -->
+        <a href="{{ url_for('tasks', status='all') }}" class="stat-card stat-total">
+            <div class="stat-content">
+                <span class="stat-label">Total Tasks</span>
+                <span class="stat-number">{{ counts.total }}</span>
+                <span class="stat-meta">All academic items</span>
+            </div>
+            <div class="stat-icon-wrapper total-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </div>
+        </a>
+
+        <!-- Pending Tasks -->
+        <a href="{{ url_for('tasks', status='pending') }}" class="stat-card stat-pending">
+            <div class="stat-content">
+                <span class="stat-label">Pending Tasks</span>
+                <span class="stat-number">{{ counts.pending }}</span>
+                <span class="stat-meta">In-progress items</span>
+            </div>
+            <div class="stat-icon-wrapper pending-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+        </a>
+
+        <!-- Completed Tasks -->
+        <a href="{{ url_for('tasks', status='completed') }}" class="stat-card stat-completed">
+            <div class="stat-content">
+                <span class="stat-label">Completed Tasks</span>
+                <span class="stat-number">{{ counts.completed }}</span>
+                <span class="stat-meta">Successfully finished</span>
+            </div>
+            <div class="stat-icon-wrapper completed-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </a>
+
+        <!-- Overdue Tasks -->
+        <a href="{{ url_for('tasks', status='overdue') }}" class="stat-card stat-overdue">
+            <div class="stat-content">
+                <span class="stat-label">Overdue Tasks</span>
+                <span class="stat-number">{{ counts.overdue }}</span>
+                <span class="stat-meta">Requires urgent action</span>
+            </div>
+            <div class="stat-icon-wrapper overdue-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+        </a>
+    </div>
+
+    <!-- Progress Overview Card -->
+    <div class="card progress-card">
+        <div class="progress-header">
+            <div>
+                <h3 class="card-title">Overall Task Completion</h3>
+                <p class="card-subtitle">Keep up the steady pace to stay ahead of upcoming college submissions</p>
+            </div>
+            <div class="progress-stat-pill">
+                <strong>{{ counts.completion_rate }}%</strong> Completed
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: {{ counts.completion_rate }}%;"></div>
+        </div>
+        <div class="progress-meta-row">
+            <span>{{ counts.completed }} of {{ counts.total }} tasks finished</span>
+            <span>{{ counts.pending }} tasks remaining</span>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid: Recent Tasks & Upcoming Deadlines -->
+    <div class="dashboard-columns">
+        <!-- Recent Tasks Table Card -->
+        <div class="card recent-tasks-card">
+            <div class="card-header-flex">
+                <div>
+                    <h3 class="card-title">Recently Added Tasks</h3>
+                    <p class="card-subtitle">Quick overview of latest created coursework items</p>
+                </div>
+                <a href="{{ url_for('tasks') }}" class="btn btn-outline btn-sm">
+                    <span>View All Tasks</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </a>
+            </div>
+
+            {% if recent_tasks %}
+                <div class="table-responsive">
+                    <table class="tasks-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 48px;">Done</th>
+                                <th>Task Title</th>
+                                <th>Category</th>
+                                <th>Due Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in recent_tasks %}
+                                <tr class="task-row {% if task.status == 'Completed' %}task-row-completed{% elif task.is_overdue %}task-row-overdue{% endif %}">
+                                    <!-- Toggle status quick checkbox -->
+                                    <td class="text-center">
+                                        <form method="POST" action="{{ url_for('toggle_task', task_id=task.id) }}" class="inline-form">
+                                            <button type="submit" class="toggle-btn {% if task.status == 'Completed' %}checked{% endif %}" title="Toggle status">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <!-- Title & description preview -->
+                                    <td>
+                                        <div class="task-title-cell">
+                                            <span class="task-title-text {% if task.status == 'Completed' %}strikethrough{% endif %}">{{ task.title }}</span>
+                                            {% if task.description %}
+                                                <p class="task-desc-preview">{{ task.description|truncate(70) }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <!-- Category badge -->
+                                    <td>
+                                        <span class="badge badge-category cat-{{ task.category|lower|replace(' ', '-') }}">
+                                            {{ task.category }}
+                                        </span>
+                                    </td>
+                                    <!-- Due Date with friendly countdown -->
+                                    <td>
+                                        <div class="due-date-cell">
+                                            <span class="due-date-val">{{ task.due_date }}</span>
+                                            {% if task.is_overdue %}
+                                                <span class="badge badge-danger badge-xs">
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                                    </svg>
+                                                    {{ task.days_info }}
+                                                </span>
+                                            {% else %}
+                                                <span class="due-days-text">{{ task.days_info }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <!-- Priority badge -->
+                                    <td>
+                                        <span class="badge badge-priority-{{ task.priority|lower }}">
+                                            {{ task.priority }}
+                                        </span>
+                                    </td>
+                                    <!-- Status badge -->
+                                    <td>
+                                        {% if task.status == 'Completed' %}
+                                            <span class="badge badge-status-completed">Completed</span>
+                                        {% elif task.is_overdue %}
+                                            <span class="badge badge-status-overdue">Overdue</span>
+                                        {% else %}
+                                            <span class="badge badge-status-pending">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <!-- Actions -->
+                                    <td class="text-right">
+                                        <div class="action-btn-group">
+                                            <a href="{{ url_for('edit_task', task_id=task.id) }}" class="icon-btn edit-btn" title="Edit task">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                </svg>
+                                            </a>
+                                            <button type="button" class="icon-btn delete-btn open-delete-modal"
+                                                    data-task-id="{{ task.id }}"
+                                                    data-task-title="{{ task.title }}"
+                                                    title="Delete task">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state-box">
+                    <div class="empty-icon-circle">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h4>No Tasks Recorded Yet</h4>
+                    <p>Start your academic semester organized by adding your first task!</p>
+                    <a href="{{ url_for('add_task') }}" class="btn btn-primary btn-sm">Add First Task</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Side: Urgent Upcoming Deadlines & Quick Info -->
+        <div class="dashboard-side-column">
+            <!-- Upcoming Deadlines Card -->
+            <div class="card upcoming-card">
+                <div class="card-header">
+                    <h3 class="card-title">Upcoming Deadlines</h3>
+                    <p class="card-subtitle">Pending submissions due soon</p>
+                </div>
+                <div class="upcoming-list">
+                    {% if upcoming_tasks %}
+                        {% for task in upcoming_tasks %}
+                            <div class="upcoming-item">
+                                <div class="upcoming-indicator priority-{{ task.priority|lower }}"></div>
+                                <div class="upcoming-info">
+                                    <h4 class="upcoming-title">{{ task.title }}</h4>
+                                    <div class="upcoming-meta">
+                                        <span class="badge badge-category-sm cat-{{ task.category|lower|replace(' ', '-') }}">{{ task.category }}</span>
+                                        <span class="upcoming-due-text">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            {{ task.days_info }} ({{ task.due_date }})
+                                        </span>
+                                    </div>
+                                </div>
+                                <form method="POST" action="{{ url_for('toggle_task', task_id=task.id) }}">
+                                    <button type="submit" class="quick-check-btn" title="Mark as Completed">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state-side">
+                            <p>🎉 All caught up! No urgent upcoming deadlines right now.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Tips / Academic Categories Info -->
+            <div class="card quick-tips-card">
+                <div class="card-header">
+                    <h3 class="card-title">Task Categories Breakdown</h3>
+                </div>
+                <div class="category-pills-list">
+                    <a href="{{ url_for('tasks', category='Assignment') }}" class="cat-pill-link">
+                        <span class="cat-dot cat-assignment"></span>
+                        <span>Assignments</span>
+                    </a>
+                    <a href="{{ url_for('tasks', category='Practical') }}" class="cat-pill-link">
+                        <span class="cat-dot cat-practical"></span>
+                        <span>Lab Practicals</span>
+                    </a>
+                    <a href="{{ url_for('tasks', category='Project') }}" class="cat-pill-link">
+                        <span class="cat-dot cat-project"></span>
+                        <span>Projects</span>
+                    </a>
+                    <a href="{{ url_for('tasks', category='Exam Preparation') }}" class="cat-pill-link">
+                        <span class="cat-dot cat-exam"></span>
+                        <span>Exam Prep</span>
+                    </a>
+                    <a href="{{ url_for('tasks', category='Personal') }}" class="cat-pill-link">
+                        <span class="cat-dot cat-personal"></span>
+                        <span>Personal</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Task • Student Task Management System{% endblock %}
+{% block page_heading %}Add New Task{% endblock %}
+
+{% block content %}
+<div class="form-page-container">
+    <div class="back-nav-bar">
+        <a href="{{ url_for('tasks') }}" class="back-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Tasks</span>
+        </a>
+    </div>
+
+    <div class="card form-card">
+        <div class="form-card-header">
+            <div class="form-icon-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </div>
+            <div>
+                <h2 class="form-card-title">Create Academic Task</h2>
+                <p class="form-card-subtitle">Fill in the details below to add a new assignment, practical, or study goal.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('add_task') }}" class="task-form" id="addTaskForm" novalidate>
+            <!-- Task Title Field -->
+            <div class="form-group">
+                <label for="taskTitle" class="form-label required">Task Title</label>
+                <input type="text"
+                       name="title"
+                       id="taskTitle"
+                       class="form-control"
+                       placeholder="e.g., Computer Graphics Experiment 4 Submission"
+                       value="{{ form_data.title if form_data else '' }}"
+                       required
+                       maxlength="150"
+                       autofocus>
+                <span class="field-hint">Be clear and specific (up to 150 characters).</span>
+            </div>
+
+            <!-- Two-column row: Category & Priority -->
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="taskCategory" class="form-label required">Category</label>
+                    <select name="category" id="taskCategory" class="form-control" required>
+                        {% for cat in ALL_CATEGORIES %}
+                            <option value="{{ cat }}" {% if form_data and form_data.category == cat %}selected{% endif %}>
+                                {{ cat }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span class="field-hint">Helps group your coursework.</span>
+                </div>
+
+                <div class="form-col">
+                    <label for="taskPriority" class="form-label required">Priority Level</label>
+                    <select name="priority" id="taskPriority" class="form-control" required>
+                        {% for prio in ALL_PRIORITIES %}
+                            <option value="{{ prio }}" {% if form_data and form_data.priority == prio %}selected{% elif not form_data and prio == 'Medium' %}selected{% endif %}>
+                                {{ prio }} Priority
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span class="field-hint">Indicates urgency of this task.</span>
+                </div>
+            </div>
+
+            <!-- Due Date Field -->
+            <div class="form-group">
+                <label for="taskDueDate" class="form-label required">Due Date</label>
+                <div class="input-with-icon">
+                    <input type="date"
+                           name="due_date"
+                           id="taskDueDate"
+                           class="form-control"
+                           value="{{ form_data.due_date if form_data else '' }}"
+                           required>
+                </div>
+                <span class="field-hint">Select the submission or completion deadline.</span>
+            </div>
+
+            <!-- Task Description Field -->
+            <div class="form-group">
+                <label for="taskDesc" class="form-label">Description / Notes <span class="text-muted">(Optional)</span></label>
+                <textarea name="description"
+                          id="taskDesc"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Add faculty guidelines, reference chapters, links, partner names, or personal notes...">{{ form_data.description if form_data else '' }}</textarea>
+                <span class="field-hint">Any instructions or requirements to remember.</span>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{{ url_for('tasks') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" id="saveTaskBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Save Task</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
